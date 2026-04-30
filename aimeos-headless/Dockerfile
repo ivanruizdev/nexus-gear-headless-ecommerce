@@ -1,5 +1,6 @@
 # aimeos-headless/Dockerfile
-FROM php:8.2-fpm-alpine
+# Changed from 8.2 to 8.3 to satisfy Laravel 13 dependencies
+FROM php:8.3-fpm-alpine
 
 # Install system dependencies required by Laravel and Aimeos
 RUN apk add --no-cache \
