@@ -29,3 +29,38 @@ This project implements a strict separation of concerns between the presentation
 **Brian Ivan Ruiz Angeles**  
 *Systems Engineering Student & Software Developer*  
 [Visit my website](ivanruiz.dev)
+
+
+## 🛠 Development and Deployment
+
+This project is fully dockerized to ensure environment consistency. Follow these steps to get the Headless environment running locally.
+
+### Prerequisites
+*   **Docker & Docker Compose**
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git
+cd nexus-gear-headless
+```
+
+### 2. Environment Setup (Docker)
+The root docker-compose.yml orchestrates the PHP 8.2 container, the PostgreSQL 15 database, and the Nginx web server.
+
+```bash
+# Start the containers in the background
+docker-compose up -d
+
+# Install backend dependencies (Aimeos/Laravel)
+docker-compose exec app composer install
+
+# Run database migrations
+docker-compose exec app php artisan migrate
+```
+
+### 3. Accessing the Application
+Frontend (Vue.js 3): Open http://localhost:8080 to view the high-conversion light theme UI.
+
+Backend API: Access the Aimeos JSON:API gateway at http://localhost:8080/jsonapi.
+
+Database: PostgreSQL is available on port 5432 for local inspection.
