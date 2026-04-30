@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Backend: PHP-FPM con Aimeos/Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sinacsis-app
+    restart: unless-stopped
+    volumes:
+      - ./aimeos-headless:/var/www
+    networks:
+      - sinacsis-net
+
+  # Servidor Web: Nginx para Front y Back
+  webserver:
+    image: nginx:alpine
+    container_name: sinacsis-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./aimeos-headless:/var/www
+      - ./frontend:/var/www/frontend
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - sinacsis-net
+
+  # Base de Datos: PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: sinacsis-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nexus_gear
+      POSTGRES_USER: sinacsis_admin
+      POSTGRES_PASSWORD: your_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - sinacsis-net
+
+networks:
+  sinacsis-net:
+    driver: bridge
+
+volumes:
+  pgdata:

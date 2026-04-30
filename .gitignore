@@ -5,17 +5,25 @@
 Thumbs.db
 *~
 *.swp
+.env
 .vscode/
 .idea/
+pgdata/
 
 # ==========================================
-# 2. FRONTEND (Preparación para Vue.js)
+# 2.BACKEND
+# ========================================= 
+aimeos-headless/vendor/
+aimeos-headless/.env
+
+# ==========================================
+# 3. FRONTEND (Preparación para Vue.js)
 # ==========================================
 /frontend/node_modules/
 npm-debug.log
 yarn-error.log
 
 # ==========================================
-# 3. DOCUMENTACIÓN (Ignorado temporalmente)
+# 4. DOCUMENTACIÓN (Ignorado temporalmente)
 # ==========================================
 /diagrams/
