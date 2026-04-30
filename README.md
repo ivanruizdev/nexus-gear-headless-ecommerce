@@ -34,18 +34,18 @@ This project implements a strict separation of concerns between the presentation
 
 This project is fully dockerized to ensure environment consistency across the team. Follow these steps to get the Headless environment running locally.
 
-Prerequisites
+### Prerequisites
 
 Docker & Docker Compose
 
 Important: If you have a local installation of PostgreSQL running natively on your machine, please stop the service to avoid port conflicts with the Docker network.
 
 ### 1. Clone the Repository
+
 ```bash
 git clone [https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git](https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git)
 cd nexus-gear-headless
 ```
-
 
 ### 2. Environment Setup
 
@@ -86,9 +86,3 @@ docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo
 Frontend (Vue.js 3): Open http://localhost:5173 to view and develop the High-Conversion Light Theme UI.
 
 Backend API: Access the Aimeos JSON:API gateway at http://localhost:8000/jsonapi.
-
-Database: PostgreSQL is mapped to port 5433 on your local host (use this port if connecting via DBeaver or pgAdmin).
-
-
-
-Database: PostgreSQL is available on port 5432 for local inspection.
