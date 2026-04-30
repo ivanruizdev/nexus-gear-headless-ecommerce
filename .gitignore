@@ -1,0 +1,21 @@
+# ==========================================
+# 1. ARCHIVOS DEL SISTEMA Y EDITOR
+# ==========================================
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.vscode/
+.idea/
+
+# ==========================================
+# 2. FRONTEND (Preparación para Vue.js)
+# ==========================================
+/frontend/node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==========================================
+# 3. DOCUMENTACIÓN (Ignorado temporalmente)
+# ==========================================
+/diagrams/
