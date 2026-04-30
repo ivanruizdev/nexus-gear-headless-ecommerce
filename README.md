@@ -43,7 +43,7 @@ Important: If you have a local installation of PostgreSQL running natively on yo
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git](https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git)
+git clone https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git
 cd nexus-gear-headless
 ```
 
