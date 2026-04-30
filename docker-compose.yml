@@ -1,42 +1,67 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
-  # BACKEND (Aimeos Engine)
   backend:
     build:
       context: ./aimeos-headless
       dockerfile: Dockerfile
-    container_name: nexus-backend
+    image: nexus-gear-backend:latest
+    container_name: nexus_gear_backend
+    restart: unless-stopped
+    working_dir: /var/www/html
     volumes:
-      - ./aimeos-headless:/var/www
+      - ./aimeos-headless:/var/www/html
     networks:
-      - sinacsis-net
+      - nexus_network
 
-  # FRONTEND (Vue.js 3 Dev Server)
+  nginx:
+    image: nginx:alpine
+    container_name: nexus_gear_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./aimeos-headless:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - nexus_network
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: nexus-frontend
+    image: nexus-gear-frontend:latest
+    container_name: nexus_gear_frontend
+    restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "5173:5173" 
     volumes:
       - ./frontend:/app
-      - /app/node_modules # Evita conflictos de dependencias locales/contenedor
+      - /app/node_modules 
     networks:
-      - sinacsis-net
+      - nexus_network
 
-  # BASE DE DATOS
   db:
     image: postgres:15-alpine
-    container_name: nexus-db
+    container_name: nexus_gear_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: nexus_gear
-      POSTGRES_USER: sinacsis_admin
-      POSTGRES_PASSWORD: your_secure_password
+      POSTGRES_DB: nexus_gear_db
+      POSTGRES_USER: nexus_admin
+      POSTGRES_PASSWORD: secure_postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
     networks:
-      - sinacsis-net
+      - nexus_network
 
 networks:
-  sinacsis-net:
+  nexus_network:
     driver: bridge
+
+volumes:
+  db_data:
