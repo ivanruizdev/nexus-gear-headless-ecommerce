@@ -1,51 +1,42 @@
 version: '3.8'
 
 services:
-  # Backend: PHP-FPM con Aimeos/Laravel
-  app:
+  # BACKEND (Aimeos Engine)
+  backend:
     build:
-      context: .
+      context: ./aimeos-headless
       dockerfile: Dockerfile
-    container_name: sinacsis-app
-    restart: unless-stopped
+    container_name: nexus-backend
     volumes:
       - ./aimeos-headless:/var/www
     networks:
       - sinacsis-net
 
-  # Servidor Web: Nginx para Front y Back
-  webserver:
-    image: nginx:alpine
-    container_name: sinacsis-web
-    restart: unless-stopped
+  # FRONTEND (Vue.js 3 Dev Server)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nexus-frontend
     ports:
-      - "8080:80"
+      - "5173:5173"
     volumes:
-      - ./aimeos-headless:/var/www
-      - ./frontend:/var/www/frontend
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend:/app
+      - /app/node_modules # Evita conflictos de dependencias locales/contenedor
     networks:
       - sinacsis-net
 
-  # Base de Datos: PostgreSQL
+  # BASE DE DATOS
   db:
     image: postgres:15-alpine
-    container_name: sinacsis-db
-    restart: unless-stopped
+    container_name: nexus-db
     environment:
       POSTGRES_DB: nexus_gear
       POSTGRES_USER: sinacsis_admin
       POSTGRES_PASSWORD: your_secure_password
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     networks:
       - sinacsis-net
 
 networks:
   sinacsis-net:
     driver: bridge
-
-volumes:
-  pgdata:
