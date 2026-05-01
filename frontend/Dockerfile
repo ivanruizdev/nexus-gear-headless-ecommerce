@@ -1,12 +1,9 @@
-FROM php:8.2-fpm
+# frontend/Dockerfile
+FROM node:20-alpine
 
-RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
-    libicu-dev libpq-dev zip unzip git curl
+# Set the working directory inside the container
+WORKDIR /app
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_pgsql gd zip intl
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www
+# Keep the container running in the background for development
+# This allows us to exec into it and run 'npm install' or 'npm run dev'
+CMD ["tail", "-f", "/dev/null"]
