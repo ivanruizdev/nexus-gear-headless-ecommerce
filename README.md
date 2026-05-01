@@ -95,7 +95,7 @@ docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo
 # Install Node modules for the Vue application
 docker-compose exec frontend npm install
 
-# Run frontend server
+# Run frontend dev server
 docker-compose exec -d frontend npm run dev
 
 ```
