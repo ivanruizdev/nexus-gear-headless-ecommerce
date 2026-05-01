@@ -31,7 +31,7 @@ This project implements a strict separation of concerns between the presentation
 [Visit my website](https://ivanruiz.dev/)
 
 **Erick Rodrigo Moreno Santibáñez**  
-*Systems Engineering Student*
+*Computer Systems Engineering Student*
 <!-- [Visit my website](Put your linkeding, or github profile link, or website url here) -->
 
 ## 🛠 Development and Deployment
