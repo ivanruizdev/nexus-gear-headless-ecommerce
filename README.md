@@ -37,8 +37,11 @@ This project is fully dockerized to ensure environment consistency. Follow these
 ### Prerequisites
 
 Install the following into your computer:
+
 An Ubuntu (Linux) based distribution or Windows Subsytem for Linux 2 (WSL2) installed in case you are using windows.
+
 Git
+
 Docker & Docker Compose.
 
 Important: If you have a local installation of PostgreSQL running natively on your machine, please stop the service to avoid port conflicts with the Docker network.
