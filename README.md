@@ -65,34 +65,38 @@ cp aimeos-headless/.env.example aimeos-headless/.env
 ```
 Note: Ensure your DB_CONNECTION is set to pgsql, DB_HOST is db, and DB_PORT is 5432 within the .env file, and customize as you need.
 
-### 3. Build and Initialize (Docker)
+### 3. Build and Initialize
 
 The root docker-compose.yml orchestrates the PHP 8.3 backend container, the PostgreSQL 15 database, the Nginx web server, and the Vue 3 frontend container.
 
 ```bash
-# 1. Start all containers in the background and build images
+# Start all containers in the background and build images
 docker-compose up -d --build
 
-# 2. Install backend dependencies (Aimeos/Laravel)
+# Install PHP dependencies
 docker-compose exec backend composer install
 
-# 3. Generate Laravel application key
-docker-compose exec backend php artisan key:generate
-
-# 4. Set storage permissions for Laravel
+# Fix storage permissions for Laravel logs and cache
 docker-compose exec backend chmod -R 777 storage bootstrap/cache
 
-# 5. Generate JWT secret for API authentication
+# Generate Laravel application key and JWT secret for API Auth
+docker-compose exec backend php artisan key:generate
 docker-compose exec backend php artisan jwt:secret
 
-# 6. Clear config cache to ensure .env is read properly
+# Clear config cache to ensure .env is read properly
 docker-compose exec backend php artisan config:clear
 
-# 7. Run database migrations
+# Run database migrations
 docker-compose exec backend php artisan migrate
 
-# 8. Setup Aimeos and inject demo data for testing
+# Setup Aimeos and inject demo data for testing
 docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo:1
+
+# Install Node modules for the Vue application
+docker-compose exec frontend npm install
+
+# Start the Vite development server in the background
+docker-compose exec -d frontend npm run dev
 
 ```
 
