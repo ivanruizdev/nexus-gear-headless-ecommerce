@@ -27,40 +27,81 @@ This project implements a strict separation of concerns between the presentation
 
 ## 👨‍💻 Authors
 **Brian Ivan Ruiz Angeles**  
-*Systems Engineering Student & Software Developer*  
-[Visit my website](ivanruiz.dev)
+*Computer Systems Engineering Student & Software Developer*  
+[Visit my website](https://ivanruiz.dev/)
 
+**Erick Rodrigo Moreno Santibáñez**  
+*Computer Systems Engineering Student*
+<!-- [Visit my website](Put your linkeding, or github profile link, or website url here) -->
 
 ## 🛠 Development and Deployment
 
 This project is fully dockerized to ensure environment consistency. Follow these steps to get the Headless environment running locally.
 
 ### Prerequisites
-*   **Docker & Docker Compose**
+
+Install the following into your computer:
+
+*  **An Ubuntu (Linux) based distribution or Windows Subsytem for Linux 2 (WSL2) installed in case you are using windows.**
+*  **Git**
+*  **Docker & Docker Compose.**
+
+Important: If you have a local installation of PostgreSQL running natively on your machine, please stop the service to avoid port conflicts with the Docker network.
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git
-cd nexus-gear-headless
+cd nexus-gear-headless-ecommerce
 ```
 
-### 2. Environment Setup (Docker)
-The root docker-compose.yml orchestrates the PHP 8.2 container, the PostgreSQL 15 database, and the Nginx web server.
+### 2. Environment Setup
+
+Configure the backend environment variables before building the containers.
 
 ```bash
-# Start the containers in the background
-docker-compose up -d
+# Copy the example environment file
+cp aimeos-headless/.env.example aimeos-headless/.env
+```
+Note: Ensure your DB_CONNECTION is set to pgsql, DB_HOST is db, and DB_PORT is 5432 within the .env file, and customize as you need.
 
-# Install backend dependencies (Aimeos/Laravel)
-docker-compose exec app composer install
+### 3. Build and Initialize
+
+The root docker-compose.yml orchestrates the PHP 8.3 backend container, the PostgreSQL 15 database, the Nginx web server, and the Vue 3 frontend container.
+
+```bash
+# Start all containers in the background and build images
+docker-compose up -d --build
+
+# Install PHP dependencies
+docker-compose exec backend composer install
+
+# Fix storage permissions for Laravel logs and cache
+docker-compose exec backend chmod -R 777 storage bootstrap/cache
+
+# Generate Laravel application key and JWT secret for API Auth
+docker-compose exec backend php artisan key:generate
+docker-compose exec backend php artisan jwt:secret
+
+# Clear config cache to ensure .env is read properly
+docker-compose exec backend php artisan config:clear
 
 # Run database migrations
-docker-compose exec app php artisan migrate
+docker-compose exec backend php artisan migrate
+
+# Setup Aimeos and inject demo data for testing
+docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo:1
+
+# Install Node modules for the Vue application
+docker-compose exec frontend npm install
+
+# Start the Vite development server in the background
+docker-compose exec -d frontend npm run dev
+
 ```
 
-### 3. Accessing the Application
-Frontend (Vue.js 3): Open http://localhost:8080 to view the high-conversion light theme UI.
+### 4. Accessing the Application
 
-Backend API: Access the Aimeos JSON:API gateway at http://localhost:8080/jsonapi.
+Frontend (Vue.js 3): Open http://localhost:5173 to view and develop the High-Conversion Light Theme UI.
 
-Database: PostgreSQL is available on port 5432 for local inspection.
+Backend API: Access the Aimeos JSON:API gateway at http://localhost:8000/jsonapi.
