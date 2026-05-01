@@ -79,20 +79,21 @@ docker-compose exec backend composer install
 # 3. Generate Laravel application key
 docker-compose exec backend php artisan key:generate
 
-# 4. Clear config cache to ensure .env is read properly
-docker-compose exec backend php artisan config:clear
-
-# 5. Run database migrations
-docker-compose exec backend php artisan migrate
-
-# 6. Setup Aimeos and inject demo data for testing
-docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo:1
-
-# 7. Set storage permissions for Laravel
+# 4. Set storage permissions for Laravel
 docker-compose exec backend chmod -R 777 storage bootstrap/cache
 
-# 8. Generate JWT secret for API authentication
+# 5. Generate JWT secret for API authentication
 docker-compose exec backend php artisan jwt:secret
+
+# 6. Clear config cache to ensure .env is read properly
+docker-compose exec backend php artisan config:clear
+
+# 7. Run database migrations
+docker-compose exec backend php artisan migrate
+
+# 8. Setup Aimeos and inject demo data for testing
+docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo:1
+
 ```
 
 ### 4. Accessing the Application
