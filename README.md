@@ -95,6 +95,9 @@ docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo
 # Install Node modules for the Vue application
 docker-compose exec frontend npm install
 
+# Run frontend server
+docker-compose exec -d frontend npm run dev
+
 ```
 
 ### 4. Accessing the Application
@@ -107,11 +110,13 @@ Backend API: Access the Aimeos JSON:API gateway at http://localhost:8000/jsonapi
 
 Due to the aggressive caching in Docker volumes and our upgrade to Tailwind CSS v4, the Vite executable links might occasionally break during dependency resolution. If the frontend container fails to load the dev server, run the following commands to rebuild the binaries:
 
-### 1. Force reinstall dependencies and rebuild binary links
+``` bash
+# Force reinstall dependencies and rebuild binary links
 docker-compose exec frontend npm install --force
 
-### 2. Restart the frontend container to clear Vite cache and boot the server automatically
+# Restart the frontend container to clear Vite cache and boot the server automatically
 docker-compose restart frontend
+```
 
 ## Frontend Architecture Note (For UI Developers)
 
