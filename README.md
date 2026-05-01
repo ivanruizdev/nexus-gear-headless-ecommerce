@@ -87,6 +87,12 @@ docker-compose exec backend php artisan migrate
 
 # 6. Setup Aimeos and inject demo data for testing
 docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo:1
+
+# 7. Set storage permissions for Laravel
+docker-compose exec backend chmod -R 777 storage bootstrap/cache
+
+# 8. Generate JWT secret for API authentication
+docker-compose exec backend php artisan jwt:secret
 ```
 
 ### 4. Accessing the Application
