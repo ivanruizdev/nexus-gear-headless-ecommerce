@@ -1,3 +1,6 @@
+@import "tailwindcss";
+
+
 /* VARIABLES DE DISEÑO NEXUS - TEMA CLARO */
         :root {
             --primary: #00b377;      /* Verde más sobrio para mejor contraste en claro */
