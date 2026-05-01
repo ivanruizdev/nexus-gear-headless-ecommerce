@@ -28,7 +28,7 @@ This project implements a strict separation of concerns between the presentation
 ## 👨‍💻 Authors
 **Brian Ivan Ruiz Angeles**  
 *Systems Engineering Student & Software Developer*  
-[Visit my website](ivanruiz.dev)
+[Visit my website](https://ivanruiz.dev/)
 
 ## 🛠 Development and Deployment
 
