@@ -95,9 +95,6 @@ docker-compose exec backend php artisan aimeos:setup --option=setup/default/demo
 # Install Node modules for the Vue application
 docker-compose exec frontend npm install
 
-# Start the Vite development server in the background
-docker-compose exec -d frontend npm run dev
-
 ```
 
 ### 4. Accessing the Application
@@ -105,3 +102,21 @@ docker-compose exec -d frontend npm run dev
 Frontend (Vue.js 3): Open http://localhost:5173 to view and develop the High-Conversion Light Theme UI.
 
 Backend API: Access the Aimeos JSON:API gateway at http://localhost:8000/jsonapi.
+
+## 🚨 Troubleshooting & Known Issues
+
+Due to the aggressive caching in Docker volumes and our upgrade to Tailwind CSS v4, the Vite executable links might occasionally break during dependency resolution. If the frontend container fails to load the dev server, run the following commands to rebuild the binaries:
+
+# 1. Force reinstall dependencies and rebuild binary links
+docker-compose exec frontend npm install --force
+
+# 2. Restart the frontend container to clear Vite cache and boot the server automatically
+docker-compose restart frontend
+
+### Frontend Architecture Note (For UI Developers)
+
+We are using Tailwind CSS v4 directly integrated with Vite.
+
+No PostCSS: We do not use postcss.config.js. Tailwind is integrated directly via the @tailwindcss/vite plugin in vite.config.ts.
+
+CSS Import: Do not use @tailwind base;. Use the modern @import "tailwindcss"; in your src/assets/css/style.css file.
