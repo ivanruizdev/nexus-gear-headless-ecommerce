@@ -32,11 +32,14 @@ This project implements a strict separation of concerns between the presentation
 
 ## 🛠 Development and Deployment
 
-This project is fully dockerized to ensure environment consistency across the team. Follow these steps to get the Headless environment running locally.
+This project is fully dockerized to ensure environment consistency. Follow these steps to get the Headless environment running locally.
 
 ### Prerequisites
 
-Docker & Docker Compose
+Install the following into your computer:
+An Ubuntu (Linux) based distribution or Windows Subsytem for Linux 2 (WSL2) installed in case you are using windows.
+Git
+Docker & Docker Compose.
 
 Important: If you have a local installation of PostgreSQL running natively on your machine, please stop the service to avoid port conflicts with the Docker network.
 
@@ -44,7 +47,7 @@ Important: If you have a local installation of PostgreSQL running natively on yo
 
 ```bash
 git clone https://github.com/ivanruizdev/nexus-gear-headless-ecommerce.git
-cd nexus-gear-headless
+cd nexus-gear-headless-ecommerce
 ```
 
 ### 2. Environment Setup
