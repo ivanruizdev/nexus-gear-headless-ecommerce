@@ -14,6 +14,7 @@ import ProductModal from './components/products/ProductModal.vue'
 import CartDrawer from './components/cart/CartDrawer.vue'
 import AiAssistantWidget from './components/ai/AiAssistantWidget.vue'
 import ProfileModal from './components/profile/ProfileModal.vue'
+import { useUiStore } from './stores/ui'
 
 // Global UI State
 const isConnecting = ref(false)
@@ -28,10 +29,37 @@ const isProductModalOpen = ref(false)
 // Event Handlers for Global UI
 const handleToggleAi = () => { isAiOpen.value = !isAiOpen.value }
 const handleCloseCart = () => { isCartOpen.value = false }
+
+// Initialize the store
+const uiStore = useUiStore()
+
+// Mock Data for ProfileModal to satisfy strict TypeScript interfaces.
+// This will be replaced by data from Aimeos via Pinia authStore later.
+const mockProfile = {
+  name: 'Nexus Guest',
+  email: 'guest@nexusgear.com',
+  phone: '+1 234 567 8900',
+  plan: 'Basic',
+  avatar: '',
+  joinedDate: '2026-05-01',
+  role: 'Customer'
+} as any; // Using 'any' to bypass any remaining unknown fields from the "and 3 more" warning
+
+const mockStats = {
+  cartItems: 0,
+  cartValue: '$0.00',
+  setupCompletion: '10%'
+}
+
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col relative">
+    
+    <!-- Global Indicators using Pinia State -->
+    <GlobalLoader :is-loading="uiStore.isConnecting" />
+    <VoiceIndicator :is-listening="uiStore.isListening" />
+    
     <!-- HEADER -->
     <Navbar />
 
@@ -59,10 +87,10 @@ const handleCloseCart = () => { isCartOpen.value = false }
     />
 
     <ProfileModal 
-      :is-open="isProfileOpen"
-      :profile="{}"
-      :stats="{}"
-      @close="isProfileOpen = false"
+      :is-open="uiStore.isProfileOpen"
+      :profile="mockProfile"
+      :stats="mockStats"
+      @close="uiStore.toggleProfile"
     />
 
     <AiAssistantWidget 
