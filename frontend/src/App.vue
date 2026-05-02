@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterView } from 'vue-router'
-import './assets/css/style.css'
+import './assets/css/style.css' 
 
 // Layout & UI (Global Components only)
 import Navbar from './components/layout/Navbar.vue'
