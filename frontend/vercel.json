@@ -1,0 +1,11 @@
+// File: frontend/vercel.json
+// This configuration ensures that Vercel routes all traffic to index.html
+// so Vue Router can handle the SPA navigation without triggering 404 errors.
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
