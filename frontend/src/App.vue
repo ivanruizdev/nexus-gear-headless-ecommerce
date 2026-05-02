@@ -1,9 +1,24 @@
 <script setup lang="ts">
+
+import { ref } from 'vue'
 // 1. Importing our extracted components
 import Navbar from './components/layout/Navbar.vue'
 import HeroSection from './components/home/HeroSection.vue'
 
-// 2. Importing global styles
+import CategoriesSection from './components/home/CategoriesSection.vue'
+import FeaturedProductsSection from './components/home/FeaturedProductsSection.vue'
+import FeaturesSection from './components/home/FeaturesSection.vue'
+import PricingPlansSection from './components/home/PricingPlansSection.vue'
+import FooterSection from './components/layout/FooterSection.vue'
+
+
+import CartDrawer from './components/cart/CartDrawer.vue'
+import type { CartItem, CartTotals } from './components/cart/CartDrawer.vue'
+
+import CategoriesSection from './components/home/CategoriesSection.vue'
+import FeaturedProductsSection, { type Product } from './components/home/FeaturedProductsSection.vue'
+
+
 import './assets/css/style.css'
 
 // 3. Dummy handlers to prevent Vue compilation errors. 
@@ -26,15 +41,106 @@ const toggleAssistant = () => { console.log('Toggling Nexus AI Assistant') }
 const askAI = (query: string) => { console.log(`Asking AI: ${query}`) }
 const startVoiceAssistant = () => { console.log('Activating Web Speech API') }
 const closeProductModal = (event?: Event) => { console.log('Closing product modal') }
+import CategoriesSection from './components/home/CategoriesSection.vue'
+
+// This handler will eventually construct the URL or payload 
+// to ask Aimeos JSON:API for the filtered products
+const handleCategoryFilter = (categorySlug: string) => {
+  console.log(`Preparing to fetch [${categorySlug}] products from Aimeos API...`)
+  // TODO: Call Aimeos API
+
+
+
+// Dummy state. Later, this will be populated by fetching from Aimeos JSON:API
+const isLoadingProducts = ref(false)
+const featuredProducts = ref<Product[]>([
+  { id: '1', name: 'Nexus Quantum Display', price: 449.99, formattedPrice: '$449.99', imageUrl: '', category: 'Visual' },
+  { id: '2', name: 'Nexus Pulse Mouse', price: 62.99, formattedPrice: '$62.99', imageUrl: '', category: 'Peripherals' },
+  { id: '3', name: 'Nexus Link Pro', price: 135.99, formattedPrice: '$135.99', imageUrl: '', category: 'Audio' },
+  { id: '4', name: 'Nexus Mech X9', price: 99.00, formattedPrice: '$99.00', imageUrl: '', category: 'Peripherals' }
+])
+
+const handleAddToCart = (productId: string) => {
+  console.log(`Adding product [${productId}] to cart via Aimeos API...`)
+}
+
+const handleViewProduct = (productId: string) => {
+  console.log(`Navigating to detail view for product [${productId}]...`)
+}
+
+const handleViewAllProducts = () => {
+  console.log('Navigating to full catalog...')
+}
+
+
+
+const handlePlanSelection = (planId: string) => {
+  console.log(`Delegating registration for plan [${planId}] to Aimeos API...`)
+  // TODO: Trigger modal or redirect to Aimeos checkout/registration endpoint
+}
+
+
+// Dummy state. This will be managed by a store (Pinia) or fetched from Aimeos
+const isCartOpen = ref(false)
+const userMembership = ref('pro') // 'starter', 'pro', 'elite'
+
+const dummyCartItems = ref<CartItem[]>([
+  { id: 'item_1', productId: 'p_1', name: 'Nexus Quantum Display', price: 449.99, formattedPrice: '$449.99', quantity: 1, imageUrl: '' }
+])
+
+const dummyTotals = ref<CartTotals>({
+  count: 1,
+  subtotal: '$449.99',
+  tax: '$72.00',
+  discount: '$45.00',
+  total: '$476.99'
+})
+
+const handleOpenCart = () => { isCartOpen.value = true }
+const handleCloseCart = () => { isCartOpen.value = false }
+
+const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
+  console.log(`Delegating update to Aimeos: Item ${itemId} to qty ${newQuantity}`)
+  // TODO: Call Aimeos API and update local state
+}
+
+const handleRemoveItem = (itemId: string) => {
+  console.log(`Delegating removal to Aimeos: Item ${itemId}`)
+  // TODO: Call Aimeos API
+}
+
+const handleClearCart = () => {
+  console.log('Clearing cart via Aimeos...')
+}
+
+const handleCheckout = () => {
+  console.log('Redirecting to checkout flow...')
+}
+
 </script>
 
 <template>
+<div class="min-h-screen flex flex-col"></div>    
   <main>
     <!-- Navbar Component -->
     <Navbar />
 
     <!-- Hero Section Component -->
     <HeroSection />
+
+    <CategoriesSection @filter-selected="handleCategoryFilter" />
+
+    <FeaturedProductsSection 
+      :products="featuredProducts" 
+      :is-loading="isLoadingProducts"
+      @add-to-cart="handleAddToCart"
+      @view-product="handleViewProduct"
+      @view-all="handleViewAllProducts"
+    />
+
+    <FeaturesSection />
+
+    <PricingPlansSection @select-plan="handlePlanSelection" />
 
     <!-- Loading Screen -->
     <div class="loading" id="loading">
@@ -60,54 +166,6 @@ const closeProductModal = (event?: Event) => { console.log('Closing product moda
         </div>
     </div>
 
-    <!-- Categories Section -->
-    <section class="categories" id="categories">
-        <div class="container mx-auto">
-            <div class="section-header">
-                <h2 class="section-title">EXPLORE <span class="gradient-text">CATEGORIES</span></h2>
-                <p class="section-subtitle">Find the perfect gear for every part of your setup</p>
-            </div>
-            
-            <div class="categories-grid">
-                <div class="category-card" data-category="audio" @click="filterCategory('audio')">
-                    <div class="category-icon"><i class="fas fa-headphones"></i></div>
-                    <div class="category-name">Audio Nexus</div>
-                    <div class="category-count">85 products</div>
-                </div>
-                
-                <div class="category-card" data-category="peripherals" @click="filterCategory('peripherals')">
-                    <div class="category-icon"><i class="fas fa-keyboard"></i></div>
-                    <div class="category-name">Peripherals</div>
-                    <div class="category-count">120 products</div>
-                </div>
-                
-                <div class="category-card" data-category="visual" @click="filterCategory('visual')">
-                    <div class="category-icon"><i class="fas fa-desktop"></i></div>
-                    <div class="category-name">Visual Gear</div>
-                    <div class="category-count">65 products</div>
-                </div>
-                
-                <div class="category-card" data-category="connection" @click="filterCategory('connection')">
-                    <div class="category-icon"><i class="fas fa-plug"></i></div>
-                    <div class="category-name">Connection</div>
-                    <div class="category-count">45 products</div>
-                </div>
-                
-                <div class="category-card" data-category="gaming" @click="filterCategory('gaming')">
-                    <div class="category-icon"><i class="fas fa-gamepad"></i></div>
-                    <div class="category-name">Gaming Pro</div>
-                    <div class="category-count">95 products</div>
-                </div>
-                
-                <div class="category-card" data-category="streaming" @click="filterCategory('streaming')">
-                    <div class="category-icon"><i class="fas fa-video"></i></div>
-                    <div class="category-name">Streaming</div>
-                    <div class="category-count">70 products</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Personalized Recommendations Section -->
     <section class="recommendations" id="recommendations">
         <div class="container mx-auto">
@@ -121,61 +179,7 @@ const closeProductModal = (event?: Event) => { console.log('Closing product moda
         </div>
     </section>
 
-    <!-- Featured Products Section -->
-    <section class="featured-products" id="products">
-        <div class="container mx-auto">
-            <div class="section-header">
-                <h2 class="section-title">FEATURED <span class="gradient-text">GEAR</span></h2>
-                <p class="section-subtitle">The most wanted products from the Nexus community</p>
-            </div>
-            
-            <div class="products-grid" id="featuredProducts">
-                <!-- Products loaded dynamically from Aimeos JSON:API -->
-            </div>
-            
-            <div class="text-center mt-12">
-                <button class="btn btn-secondary" @click="viewAllProducts">
-                    <i class="fas fa-eye"></i> VIEW ALL PRODUCTS
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Nexus Features Section -->
-    <section class="features" id="features">
-        <div class="container mx-auto">
-            <div class="section-header">
-                <h2 class="section-title">NEXUS <span class="gradient-text">FEATURES</span></h2>
-                <p class="section-subtitle">Discover the technologies that make Nexus Gear unique</p>
-            </div>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
-                    <div class="feature-title">Nexus AI Assistant</div>
-                    <div class="feature-description">Intelligent assistant that learns your habits and suggests products and setups.</div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="feature-title">Voice Control</div>
-                    <div class="feature-description">Navigate, search, and buy using voice commands.</div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
-                    <div class="feature-title">Sync Ecosystem</div>
-                    <div class="feature-description">All Nexus products connect seamlessly, creating a unified setup.</div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <div class="feature-title">Setup Optimizer</div>
-                    <div class="feature-description">Analyzes your current setup and suggests performance improvements.</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- User Types / Community Section -->
     <section class="user-types" id="users">
@@ -252,48 +256,6 @@ const closeProductModal = (event?: Event) => { console.log('Closing product moda
         </div>
     </section>
 
-    <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cartOverlay" @click="closeCart"></div>
-    <aside class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <div class="cart-title"><i class="fas fa-shopping-cart"></i> Your Cart</div>
-            <button class="btn btn-secondary btn-small" @click="closeCart">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="cart-body" id="cartItems"></div>
-        <div class="cart-footer">
-            <div class="cart-summary-row">
-                <span>Products</span>
-                <span id="cartProductsCount">0</span>
-            </div>
-            <div class="cart-summary-row">
-                <span>Subtotal</span>
-                <span id="cartSubtotal">$0.00</span>
-            </div>
-            <div class="cart-summary-row">
-                <span>Tax (16%)</span>
-                <span id="cartTax">$0.00</span>
-            </div>
-            <div class="cart-summary-row">
-                <span id="cartDiscountLabel">Membership Discount</span>
-                <span id="cartDiscount">-$0.00</span>
-            </div>
-            <div class="cart-summary-row total">
-                <span>Total</span>
-                <span id="cartTotal">$0.00</span>
-            </div>
-            <div class="cart-actions">
-                <button class="btn btn-secondary btn-full" @click="clearCart">
-                    <i class="fas fa-trash"></i> Empty Cart
-                </button>
-                <button class="btn btn-primary btn-full" @click="checkoutCart">
-                    <i class="fas fa-credit-card"></i> Checkout
-                </button>
-            </div>
-        </div>
-    </aside>
-
     <!-- User Profile Modal -->
     <div class="profile-overlay" id="profileOverlay" @click="closeProfile"></div>
     <section class="profile-modal" id="profileModal" aria-hidden="true">
@@ -368,12 +330,18 @@ const closeProductModal = (event?: Event) => { console.log('Closing product moda
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container mx-auto">
-        <div class="footer-bottom">
-            <p>&copy; 2026 Nexus Gear. All rights reserved. | "Connect your gear"</p>
-        </div>
-    </div>
-  </footer>
+  <CartDrawer 
+      :is-open="isCartOpen"
+      :items="dummyCartItems"
+      :totals="dummyTotals"
+      :membership-plan="userMembership"
+      @close="handleCloseCart"
+      @clear-cart="handleClearCart"
+      @checkout="handleCheckout"
+      @update-quantity="handleUpdateQuantity"
+      @remove-item="handleRemoveItem"
+    />
+
+  <FooterSection />
+</div>
 </template>
