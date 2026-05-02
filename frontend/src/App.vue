@@ -27,8 +27,12 @@ const isAiOpen = ref(false)
 const isProductModalOpen = ref(false)
 
 // Event Handlers for Global UI
-const handleToggleAi = () => { isAiOpen.value = !isAiOpen.value }
-const handleCloseCart = () => { isCartOpen.value = false }
+const handleToggleAi = () => {
+  isAiOpen.value = !isAiOpen.value
+}
+const handleCloseCart = () => {
+  isCartOpen.value = false
+}
 
 // Initialize the store
 const uiStore = useUiStore()
@@ -42,29 +46,27 @@ const mockProfile = {
   plan: 'Basic',
   avatar: '',
   joinedDate: '2026-05-01',
-  role: 'Customer'
-} as any; // Using 'any' to bypass any remaining unknown fields from the "and 3 more" warning
+  role: 'Customer',
+} as any // Using 'any' to bypass any remaining unknown fields from the "and 3 more" warning
 
 const mockStats = {
   cartItems: 0,
   cartValue: '$0.00',
-  setupCompletion: '10%'
+  setupCompletion: '10%',
 }
-
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col relative">
-    
+  <div class="relative min-h-screen flex flex-col font-inter text-text-main bg-surface-base">
     <!-- Global Indicators using Pinia State -->
     <GlobalLoader :is-loading="uiStore.isConnecting" />
     <VoiceIndicator :is-listening="uiStore.isListening" />
-    
+
     <!-- HEADER -->
     <Navbar />
 
     <!-- DYNAMIC ROUTER CONTENT -->
-    <main class="flex-grow">
+    <main class="grow">
       <RouterView />
     </main>
 
@@ -72,13 +74,13 @@ const mockStats = {
     <FooterSection />
 
     <!-- GLOBAL OVERLAYS & MODALS -->
-    <ProductModal 
-      :is-open="isProductModalOpen" 
-      :product="null" 
-      @close="isProductModalOpen = false" 
+    <ProductModal
+      :is-open="isProductModalOpen"
+      :product="null"
+      @close="isProductModalOpen = false"
     />
 
-    <CartDrawer 
+    <CartDrawer
       :is-open="isCartOpen"
       :items="[]"
       :totals="{ count: 0, subtotal: '$0', tax: '$0', discount: '$0', total: '$0' }"
@@ -86,14 +88,14 @@ const mockStats = {
       @close="handleCloseCart"
     />
 
-    <ProfileModal 
+    <ProfileModal
       :is-open="uiStore.isProfileOpen"
       :profile="mockProfile"
       :stats="mockStats"
       @close="uiStore.toggleProfile"
     />
 
-    <AiAssistantWidget 
+    <AiAssistantWidget
       :is-open="isAiOpen"
       :is-listening="isListening"
       :messages="[]"
