@@ -38,11 +38,28 @@ export const useProductStore = defineStore('product', () => {
         const priceItem = findRelation('price')
         const priceValue = priceItem ? parseFloat(priceItem.attributes['price.value'] || '0') : 0
 
-        // Extraer URL de la Imagen
+        // ----------------------------------------------------
+        // LÓGICA REPARADA PARA LA IMAGEN HEADLESS
+        // ----------------------------------------------------
         const mediaItem = findRelation('media')
-        const imageUrl = mediaItem ? mediaItem.attributes['media.url'] : ''
+        let rawImageUrl = mediaItem ? mediaItem.attributes['media.url'] : ''
+        
+        const backendBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace('/jsonapi', '')
 
-        // Extraer Título (Aimeos a veces deja 'product.label' vacío y usa la relación 'text')
+        if (rawImageUrl && !rawImageUrl.startsWith('http')) {
+          // 1. Asegurarnos de que empiece con slash "/"
+          rawImageUrl = rawImageUrl.startsWith('/') ? rawImageUrl : `/${rawImageUrl}`
+          
+          // 2. EL PUENTE MÁGICO: Si la ruta no incluye la carpeta 'aimeos', se la agregamos
+          if (!rawImageUrl.startsWith('/aimeos/')) {
+            rawImageUrl = `/aimeos${rawImageUrl}`
+          }
+          
+          // 3. Ensamblar la URL completa
+          rawImageUrl = `${backendBaseUrl}${rawImageUrl}`
+        }
+        // ----------------------------------------------------
+
         const textItem = findRelation('text')
         const title = attrs['product.label'] || (textItem ? textItem.attributes['text.content'] : `Nexus Gear #${item.id}`)
 
@@ -52,7 +69,7 @@ export const useProductStore = defineStore('product', () => {
           price: priceValue,
           formattedPrice: `$${priceValue.toFixed(2)}`,
           category: attrs['product.type'] || 'General',
-          imageUrl: imageUrl // Si tu backend envía rutas relativas, aquí podríamos añadir import.meta.env.VITE_API_URL
+          imageUrl: rawImageUrl
         }
       })
     } catch (e: any) {
