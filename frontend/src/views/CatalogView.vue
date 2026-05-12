@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useProductStore } from '@/stores/product' // 1. Importar el Store
 import FeaturedProductsSection from '@/components/home/FeaturedProductsSection.vue'
 
-// Estado local temporal para filtros
+// 2. Inicializar el Store
+const productStore = useProductStore()
+
 const activeCategory = ref('all')
 const priceRange = ref(500)
 
@@ -12,62 +15,32 @@ const categories = [
   { name: 'Conectividad', slug: 'connectivity' },
   { name: 'Periféricos', slug: 'peripherals' }
 ]
+
+// 3. Disparar la petición a Aimeos en cuanto la vista se monta en pantalla
+onMounted(() => {
+  productStore.fetchProducts()
+})
 </script>
 
 <template>
-  <div class="bg-surface-base min-h-screen py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="flex flex-col lg:flex-row gap-8">
-        
-        <aside class="w-full lg:w-64 shrink-0">
-          <div class="bg-white rounded-3xl p-6 border border-black/5 sticky top-24">
-            <h2 class="text-lg font-black text-gray-900 mb-6 uppercase tracking-tighter">Filtros</h2>
-            
-            <div class="mb-8">
-              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Categoría</h3>
-              <div class="space-y-2">
-                <button 
-                  v-for="cat in categories" 
-                  :key="cat.slug"
-                  @click="activeCategory = cat.slug"
-                  class="block w-full text-left px-3 py-2 rounded-xl text-sm font-bold transition-colors"
-                  :class="activeCategory === cat.slug ? 'bg-teal-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'"
-                >
-                  {{ cat.name }}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Precio Máximo</h3>
-              <input 
-                type="range" 
-                min="0" 
-                max="1000" 
-                v-model="priceRange"
-                class="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-teal-500"
-              />
-              <div class="flex justify-between mt-2 text-sm font-bold text-gray-900">
-                <span>$0</span>
-                <span>${{ priceRange }}</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <div class="grow">
+  <div class="grow">
           <div class="flex items-center justify-between mb-8">
             <h1 class="text-2xl font-black text-gray-900 uppercase tracking-tighter">
               Explora el <span class="text-teal-500">Catálogo</span>
             </h1>
-            <span class="text-sm font-bold text-gray-400 uppercase">24 Productos encontrados</span>
+            <span class="text-sm font-bold text-gray-400 uppercase">
+              {{ productStore.products.length }} Productos encontrados
+            </span>
           </div>
 
-          <FeaturedProductsSection :products="[]" :is-loading="false" />
+          <div v-if="productStore.error" class="bg-red-50 text-red-600 p-4 rounded-xl mb-6 font-bold">
+            {{ productStore.error }}
+          </div>
+
+          <FeaturedProductsSection 
+            :products="productStore.products" 
+            :is-loading="productStore.isLoading" 
+          />
         </div>
 
-      </div>
-    </div>
-  </div>
-</template>
+  </template>
