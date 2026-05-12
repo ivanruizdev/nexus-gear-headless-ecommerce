@@ -11,13 +11,15 @@ RUN apk add --no-cache \
     icu-dev \
     freetype-dev \
     libjpeg-turbo-dev \
+    libwebp-dev \
     zip \
     unzip \
     git \
     curl
 
 # Configure and install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+# <-- ¡NUEVO! Añadimos --with-webp a la configuración de GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure intl \
     && docker-php-ext-install \
     pdo_pgsql \
