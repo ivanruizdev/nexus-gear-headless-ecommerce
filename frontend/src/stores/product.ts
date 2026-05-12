@@ -2,18 +2,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { productService } from '@/services/productService'
-
-// Importamos la interfaz que ya habías definido para mantener el tipado estricto
 import type { Product } from '@/components/home/FeaturedProductsSection.vue'
 
 export const useProductStore = defineStore('product', () => {
-  // Estado Reactivo (State)
   const products = ref<Product[]>([])
   const currentProduct = ref<Product | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  // Acción para obtener el catálogo (Actions)
   const fetchProducts = async (params = {}) => {
     isLoading.value = true
     error.value = null
@@ -21,19 +17,42 @@ export const useProductStore = defineStore('product', () => {
     try {
       const response = await productService.getProducts(params)
       
-      // TRADUCCIÓN JSON:API -> DUMB FRONTEND
-      // Aimeos devuelve los datos dentro de un arreglo 'data', y cada item tiene 'attributes'
-      products.value = response.data.map((item: any): Product => {
-        const attrs = item.attributes
+      const items = response.data || []
+      // Aimeos envía las relaciones (precios, imágenes) en este arreglo 'included'
+      const included = response.included || []
+
+      products.value = items.map((item: any): Product => {
+        const attrs = item.attributes || {}
+
+        // 🧠 FUNCIÓN HELPER: Busca relaciones en el arreglo 'included'
+        const findRelation = (type: string) => {
+          const relationData = item.relationships?.[type]?.data;
+          if (!relationData) return null;
+          
+          // Puede ser un arreglo de relaciones o un solo objeto
+          const id = Array.isArray(relationData) ? relationData[0]?.id : relationData.id;
+          return included.find((inc: any) => inc.type === type && inc.id === id);
+        }
+
+        // Extraer Precio real
+        const priceItem = findRelation('price')
+        const priceValue = priceItem ? parseFloat(priceItem.attributes['price.value'] || '0') : 0
+
+        // Extraer URL de la Imagen
+        const mediaItem = findRelation('media')
+        const imageUrl = mediaItem ? mediaItem.attributes['media.url'] : ''
+
+        // Extraer Título (Aimeos a veces deja 'product.label' vacío y usa la relación 'text')
+        const textItem = findRelation('text')
+        const title = attrs['product.label'] || (textItem ? textItem.attributes['text.content'] : `Nexus Gear #${item.id}`)
+
         return {
           id: item.id,
-          // Nota: Las claves exactas (ej. 'product.label') dependen de la configuración de tu Aimeos.
-          // Estas son las más comunes por defecto, pero podrías necesitar ajustarlas.
-          name: attrs['product.label'] || 'Producto sin nombre',
-          price: parseFloat(attrs['price.value'] || '0'),
-          formattedPrice: `$${parseFloat(attrs['price.value'] || '0').toFixed(2)}`,
+          name: title,
+          price: priceValue,
+          formattedPrice: `$${priceValue.toFixed(2)}`,
           category: attrs['product.type'] || 'General',
-          imageUrl: attrs['media.url'] || '' // Aimeos suele mandar esto si incluyes 'include=media'
+          imageUrl: imageUrl // Si tu backend envía rutas relativas, aquí podríamos añadir import.meta.env.VITE_API_URL
         }
       })
     } catch (e: any) {
@@ -44,11 +63,5 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
-  return { 
-    products, 
-    currentProduct, 
-    isLoading, 
-    error, 
-    fetchProducts 
-  }
+  return { products, currentProduct, isLoading, error, fetchProducts }
 })
