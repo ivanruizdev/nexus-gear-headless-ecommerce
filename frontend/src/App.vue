@@ -54,6 +54,43 @@ const mockStats = {
   cartValue: '$0.00',
   setupCompletion: '10%',
 }
+
+// Datos de prueba para que tu nuevo CartDrawer luzca lleno
+const mockCartItems = ref([
+  { 
+    id: '1', 
+    productId: 'p-101', 
+    name: 'Nexus Quantum Display', 
+    price: 449.99, 
+    formattedPrice: '$449.99', 
+    quantity: 1, 
+    imageUrl: '' // Puedes poner una URL de imagen real aquí
+  },
+  { 
+    id: '2', 
+    productId: 'p-102', 
+    name: 'Nexus Pulse Mouse', 
+    price: 62.99, 
+    formattedPrice: '$62.99', 
+    quantity: 2, 
+    imageUrl: '' 
+  }
+])
+
+const mockCartTotals = ref({
+  count: 3,
+  subtotal: '$575.97',
+  tax: '$92.15',
+  discount: '$50.00',
+  total: '$618.12'
+})
+
+// Funciones para manejar los eventos que definiste en tu componente
+const updateQty = (id: string, q: number) => console.log('Nueva cantidad:', id, q)
+const removeItem = (id: string) => console.log('Eliminar:', id)
+const clearCart = () => console.log('Carrito vaciado')
+const checkout = () => console.log('Redirigiendo a Checkout seguro...')
+
 </script>
 
 <template>
@@ -80,12 +117,16 @@ const mockStats = {
       @close="isProductModalOpen = false"
     />
 
-    <CartDrawer
-      :is-open="isCartOpen"
-      :items="[]"
-      :totals="{ count: 0, subtotal: '$0', tax: '$0', discount: '$0', total: '$0' }"
-      membership-plan="pro"
-      @close="handleCloseCart"
+    <CartDrawer 
+      :is-open="uiStore.isCartOpen" 
+      :items="mockCartItems"
+      :totals="mockCartTotals"
+      membership-plan="Pro Member"
+      @close="uiStore.toggleCart" 
+      @update-quantity="updateQty"
+      @remove-item="removeItem"
+      @clear-cart="clearCart"
+      @checkout="checkout"
     />
 
     <ProfileModal
