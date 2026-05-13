@@ -13,10 +13,10 @@ export const useProductStore = defineStore('product', () => {
   const fetchProducts = async (params = {}) => {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await productService.getProducts(params)
-      
+
       const items = response.data || []
       // Aimeos envía las relaciones (precios, imágenes) en este arreglo 'included'
       const included = response.included || []
@@ -28,7 +28,7 @@ export const useProductStore = defineStore('product', () => {
         const findRelation = (type: string) => {
           const relationData = item.relationships?.[type]?.data;
           if (!relationData) return null;
-          
+
           // Puede ser un arreglo de relaciones o un solo objeto
           const id = Array.isArray(relationData) ? relationData[0]?.id : relationData.id;
           return included.find((inc: any) => inc.type === type && inc.id === id);
@@ -52,7 +52,7 @@ export const useProductStore = defineStore('product', () => {
           price: priceValue,
           formattedPrice: `$${priceValue.toFixed(2)}`,
           category: attrs['product.type'] || 'General',
-          imageUrl: imageUrl // Si tu backend envía rutas relativas, aquí podríamos añadir import.meta.env.VITE_API_URL
+          imageUrl: imageUrl
         }
       })
     } catch (e: any) {
@@ -63,5 +63,21 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
-  return { products, currentProduct, isLoading, error, fetchProducts }
+  /**
+   * searchByVoice - Receives raw voice transcript, cleans filler words,
+   * and fetches matching products from the Aimeos API using f[search].
+   */
+  const searchByVoice = async (text: string) => {
+    // Remove common Spanish filler words before sending to the API
+    const fillerWords = ['busca', 'buscar', 'necesito', 'quiero', 'muéstrame', 'dame', 'encuentra', 'ver']
+    const pattern = new RegExp(`\\b(${fillerWords.join('|')})\\b`, 'gi')
+    const cleanText = text.replace(pattern, '').trim()
+
+    if (!cleanText) return
+
+    // Call fetchProducts with Aimeos full-text search parameter
+    await fetchProducts({ 'f[search]': cleanText })
+  }
+
+  return { products, currentProduct, isLoading, error, fetchProducts, searchByVoice }
 })
